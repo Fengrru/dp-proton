@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+
+# experiment artifacts
+results/*.png
+results/*.pdf
+data/
+experiments/data/
+*.log
+
+# paper sources are kept locally, not tracked in the repo
+paper/
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

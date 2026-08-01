@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dp-proton"
+version = "1.0.0"
+description = "Dirichlet-Process-guided Prototype Online learner: a minimal, gradient-free, single-pass continual-learning classifier head with knowledge editing"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Feng Yuhan" }]
+keywords = ["continual-learning", "prototype", "dirichlet-process", "online-learning", "knowledge-editing"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "numpy>=1.21",
+    "scikit-learn>=1.0",
+]
+
+[project.optional-dependencies]
+experiments = [
+    "matplotlib>=3.4",
+    "torch>=1.12",
+    "torchvision>=0.13",
+]
+
+[tool.setuptools]
+packages = ["dp_proton"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

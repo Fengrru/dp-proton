@@ -1,0 +1,7 @@
+# Full experiment reproduction (paper figures + baselines).
+# Requires MNIST data: see experiments/exp_mnist_bench.py (download=False
+# by default; set download=True or place data/ under the experiments dir).
+-r requirements-core.txt
+matplotlib>=3.4
+torch>=1.12
+torchvision>=0.13

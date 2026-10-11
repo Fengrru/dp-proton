@@ -18,3 +18,8 @@ experiments/data/
 .idea/
 .DS_Store
 Thumbs.db
+
+# LaTeX build intermediates (the compiled PDF is tracked)
+paper/*.aux
+paper/*.out
+paper/*.blg

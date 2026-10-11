@@ -12,8 +12,6 @@ data/
 experiments/data/
 *.log
 
-# paper sources are kept locally, not tracked in the repo
-paper/
 
 # editors / OS
 .vscode/

@@ -7,6 +7,50 @@ A minimal, gradient-free, single-pass prototype classifier for continual
 learning under frozen features — with explicit, zero-retraining knowledge
 editing (delete / relabel / inject a class).
 
+> ## ⚠️ Correction (2026-10-11): the §5.2 creation-rule comparison does not hold
+>
+> The headline ablation of this paper — that the CRP criterion beats a
+> distance-threshold online *k*-means by **ΔACC = 0.6960 ± 0.0528** at matched
+> prototype budget, and that therefore "the DP criterion is necessary, not
+> excess complexity" — **is an artifact of a confounded comparison.**
+>
+> The two models did not differ only in their creation rule:
+>
+> - The threshold *k*-means baseline allocated basins **label-blind** — it
+>   searched all centres regardless of class — while DP/CRP's rejection baseline
+>   carried a **per-class** base measure. Per-class allocation is itself
+>   load-bearing: on the same features, label-blind basins reach 0.17–0.68
+>   accuracy where per-class basins reach 0.92–0.99.
+> - The baseline's distance threshold was not calibrated to a structural target.
+>
+> Re-measured on the same dataset (sklearn *digits*, 20 basins, matched budget),
+> with each criterion's single scalar hyperparameter fixed by a **structural
+> target** rather than tuned for accuracy, and one no-knob readout for all four:
+>
+> | Criterion | ACC @ 20 basins |
+> |---|---|
+> | hard threshold | 0.916 |
+> | threshold online *k*-means | **0.935** |
+> | DP / CRP (estimated base) | 0.917 |
+> | DP / CRP (fixed prior base) | 0.916 |
+>
+> The DP figure reproduces (0.9303 → 0.917); the **baseline** moved from 0.2342
+> to 0.935. Across every real dataset tested the spread between all four criteria
+> is ≤ 1.9 accuracy points, with no consistent winner.
+>
+> **What still stands:** the per-class architecture, the denoised in-basin
+> centroid, the rank/density readout, and exact local deletion. **What does not:**
+> the necessity claim for DP/CRP basin creation, the ΔACC = 0.6960 figure in the
+> abstract, and the "strongest single ablation result" framing in §5.2.
+>
+> DP/CRP does retain two properties, both narrower than claimed: its single
+> hyperparameter has a more tractable shape at d ≤ 64, and it has a basin-count
+> floor above d ≈ 128 that no α can lower.
+>
+> The re-measurement — seven paired experiments on synthetic and real data, with
+> the confounded-vs-fair comparison and the mechanism of the failure — is in the
+> companion repository `Fengrru/energy-basin-cl`.
+
 > **What this is.** A fully-ablated, empirically grounded baseline for the
 > *classifier head* of a continual learning system. Every component earns
 > its place through a head-to-head ablation reported in the paper

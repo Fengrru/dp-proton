@@ -4,6 +4,48 @@
 
 ---
 
+> ## ⚠️ Correction (2026-10-11): the §5.2 creation-rule comparison does not hold
+>
+> The headline ablation of this paper — that the CRP criterion beats a
+> distance-threshold online *k*-means by **ΔACC = 0.6960 ± 0.0528** at matched
+> prototype budget, and that therefore "the DP criterion is necessary, not excess
+> complexity" — **is an artifact of a confounded comparison.**
+>
+> The two models did not differ only in their creation rule. The threshold
+> *k*-means baseline allocated basins **label-blind** (it searched all centres
+> regardless of class) while DP/CRP's rejection baseline carried a **per-class**
+> base measure; and the baseline's distance threshold was not calibrated to a
+> structural target. Per-class allocation is itself load-bearing: on the same
+> features, label-blind basins reach 0.17–0.68 accuracy where per-class basins
+> reach 0.92–0.99.
+>
+> Re-measured on the same dataset (sklearn *digits*, 20 basins, matched budget),
+> with each criterion's single scalar hyperparameter fixed by a **structural
+> target** rather than tuned for accuracy, and one no-knob readout for all four:
+>
+> | Criterion | ACC @ 20 basins |
+> |---|---|
+> | hard threshold | 0.916 |
+> | threshold online *k*-means | **0.935** |
+> | DP / CRP (estimated base) | 0.917 |
+> | DP / CRP (fixed prior base) | 0.916 |
+>
+> The DP figure reproduces (0.9303 → 0.917); the **baseline** moved from 0.2342
+> to 0.935. Across every real dataset tested the spread between all four criteria
+> is ≤ 1.9 accuracy points, with no consistent winner. Treat §5.2 and the
+> abstract's ΔACC figure below as superseded by this correction.
+>
+> **What still stands:** the per-class architecture, the denoised in-basin
+> centroid, the rank/density readout, and exact local deletion. **What does not:**
+> the necessity claim for DP/CRP basin creation and the "strongest single
+> ablation result" framing in §5.2.
+>
+> The re-measurement — seven paired experiments on synthetic and real data, with
+> the confounded-vs-fair comparison and the mechanism of the failure — is in the
+> companion repository `Fengrru/energy-basin-cl`.
+
+---
+
 ## Abstract
 
 We study rehearsal-free, single-pass continual classification on top of frozen features, and ask a deliberately narrow question: *given a good creation criterion and a good readout, how far can a purely online prototype learner go, and which of its components actually matter?* We introduce **DP-ProtOn** (Dirichlet-Process-guided Prototype Online learner), a lightweight model with three components: (i) class-conditional Gaussian "basins" allocated on the fly using a Chinese-Restaurant-Process (CRP) creation criterion with diagonal covariance, (ii) one online denoised centroid per basin maintained via competitive-learning mean updates, and (iii) a Parzen / soft-$k$NN density readout over those centroids. DP-ProtOn emerged from the systematic falsification of a more elaborate energy-attractor design whose energy-softmin routing proved *net-negative* in high dimensions — a same-model readout ablation pins this failure precisely. All headline claims carry multi-seed variance: across 5 seeds on sklearn *digits* and 3 seeds on *Split-MNIST*, the CRP criterion beats a distance-threshold online $k$-means by ΔACC = 0.6960 ± 0.0528 at matched prototype budget (Figure 1a), online denoised centroids beat offline $k$-means at equal budget by 0.0340 ± 0.0053 (Figure 1b), and on Split-MNIST DP-ProtOn reaches 0.8747 ± 0.0019 ACC with near-zero forgetting (BWT = −0.0471 ± 0.0049), a +0.20 ACC advantage with 8× better backward transfer over Experience Replay at equal memory (Figure 1c), while EWC and fine-tuning collapse (BWT ≈ −0.99). Critically, because each class is a spatially localized, label-tagged attractor, DP-ProtOn supports **training-free knowledge editing**: deleting, relabeling, and injecting classes are $O(1)$ set operations on the basin list. We verify all three surgeries across 5 seeds (Figure 2): deletion drops the target class to 0.0000 ACC while perturbing others by ≤ 0.0467; relabeling is byte-identical in decision geometry (1.0000 ± 0.0000); and injecting a held-out class from merely 20 samples recovers 0.8564 ± 0.0603 ACC with no measurable forgetting of old classes. We position DP-ProtOn as an honest, fully-ablated baseline and as evidence that prototype attractors are directly editable knowledge units — a property softmax classifiers categorically lack.
@@ -219,6 +261,14 @@ Per-seed DP ACC: 0.9284, 0.9366, 0.9313, 0.9144, 0.9407. The gap's standard devi
 In single-seed budget sweeps (not plotted), DP at 32 prototypes (ACC 0.928) even beats threshold $k$-means at **266 prototypes** (ACC 0.900) — roughly 8× prototype efficiency. At matched budget, threshold $k$-means collapses to near-random: the fixed spherical radius either merges new-class points into wrong-class centroids (label contamination) or fails to adapt to class-specific density. The CRP likelihood ratio avoids both by being covariance-aware and grounded against a universal baseline (Section 3.2).
 
 **Conclusion: The DP criterion is necessary, not excess complexity.** This is the strongest single ablation result in the paper.
+
+> ⚠️ **Superseded (2026-10-11).** This conclusion does not hold; see the correction
+> at the top of this paper. The baseline here was label-blind and its threshold was
+> not calibrated to a structural target, so the two models differed in more than the
+> creation rule. Re-measured fairly on the same dataset, the four criteria span ≤ 1.9
+> accuracy points at matched budget and threshold *k*-means is ahead (0.935 vs 0.917
+> at 20 basins). The "8× prototype efficiency" figure in the paragraph above is a
+> consequence of the same confound.
 
 ### 5.3 Prototype source: online denoising vs offline $k$-means (digits, 5 seeds)
 

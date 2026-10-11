@@ -30,6 +30,42 @@
 \maketitle
 
 % ======================================================================
+% Correction notice — added 2026-10-11
+% ======================================================================
+\begin{center}
+\fbox{\parbox{0.94\textwidth}{%
+\textbf{\color{red!70!black}Correction (2026-10-11): the \S5.2 creation-rule comparison does not hold.}
+The headline ablation of this paper --- that the CRP criterion beats a distance-threshold online
+$k$-means by $\Delta$ACC${}=0.6960\pm0.0528$ at matched prototype budget, and that therefore
+``the DP criterion is necessary, not excess complexity'' --- is an artifact of a confounded
+comparison. The two models did not differ only in their creation rule: the threshold $k$-means
+baseline allocated basins \textbf{label-blind} (searching all centres regardless of class) while
+DP/CRP's rejection baseline carried a \textbf{per-class} base measure, and the baseline's
+threshold was not calibrated to a structural target. Re-measured on the same dataset (sklearn
+\textit{digits}, 20 basins, matched budget), with each criterion's single scalar hyperparameter
+fixed by a structural target and one no-knob readout for all four:
+\begin{center}
+\begin{tabular}{lc}
+\toprule
+Criterion & ACC @ 20 basins \\
+\midrule
+hard threshold & 0.916 \\
+threshold online $k$-means & \textbf{0.935} \\
+DP / CRP (estimated base) & 0.917 \\
+DP / CRP (fixed prior base) & 0.916 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The DP figure reproduces ($0.9303 \rightarrow 0.917$); the \textbf{baseline} moved from $0.2342$
+to $0.935$. Across every real dataset tested the spread between all four criteria is $\le 1.9$
+accuracy points, with no consistent winner. Treat \S5.2 and the abstract's $\Delta$ACC figure as
+superseded. What still stands: the per-class architecture, the denoised in-basin centroid, the
+rank/density readout, and exact local deletion. What does not: the necessity claim for DP/CRP
+basin creation. The re-measurement is in the companion repository \texttt{Fengrru/energy-basin-cl}.
+}}
+\end{center}
+
+% ======================================================================
 \section{Abstract}
 % ======================================================================
 
@@ -310,6 +346,8 @@ Threshold $k$-means & 0.2342 $\pm$ 0.0473 & 29.2 $\pm$ 4.2 \\
 \end{table}
 
 Per-seed DP ACC: 0.9284, 0.9366, 0.9313, 0.9144, 0.9407. The gap's std (0.053) is nowhere near zero — DP \textit{stably} dominates. In single-seed sweeps DP at 32 prototypes (0.928) beats threshold at \textbf{266} prototypes (0.900): $8\times$ prototype efficiency. \textbf{The DP criterion is necessary, not excess complexity.}
+
+\noindent\textbf{\color{red!70!black}Superseded (2026-10-11).} This conclusion does not hold; see the correction at the top of this paper. The baseline here was label-blind and its threshold was not calibrated to a structural target, so the two models differed in more than the creation rule. Re-measured fairly on the same dataset, the four criteria span $\le 1.9$ accuracy points at matched budget and threshold $k$-means is ahead (0.935 vs 0.917 at 20 basins). The ``$8\times$ prototype efficiency'' figure above is a consequence of the same confound.
 
 \subsection{Prototype source: online denoising vs offline $k$-means (digits, 5 seeds)}
 
